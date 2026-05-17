@@ -19,7 +19,7 @@ export default function SettingsPage() {
         <div className="mt-8 space-y-4 text-sm">
           <SettingRow label="Platform" value="luminalounge.com" />
           <SettingRow label="Environment" value={process.env.NODE_ENV || 'development'} />
-          <SettingRow label="API URL" value={process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api'} />
+          <SettingRow label="API URL" value={process.env.NEXT_PUBLIC_API_URL || 'https://club-caf-management-system.onrender.com'} />
         </div>
       </motion.div>
     </AdminLayoutShell>
