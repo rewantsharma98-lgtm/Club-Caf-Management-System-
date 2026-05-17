@@ -12,7 +12,9 @@ const Table = require('../models/Table');
 const MenuItem = require('../models/MenuItem');
 const { ROLES } = require('../config/constants');
 
-const seed = async () => {
+const 
+
+seed = async () => {
   const defaultLocalUri = 'mongodb://127.0.0.1:27017/openhousecafe';
   const rawUri = process.env.MONGODB_URI;
   const uri = rawUri?.trim() || defaultLocalUri;
