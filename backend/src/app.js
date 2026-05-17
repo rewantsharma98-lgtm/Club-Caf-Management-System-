@@ -33,7 +33,7 @@ connectDB().catch((err) => {
   console.error('Failed to connect to MongoDB on startup:', err);
 });
 
-const allowedOrigins = (process.env.CLIENT_URL || 'http://localhost:3000')
+const allowedOrigins = (process.env.CLIENT_URL || 'https://club-caf-management-system.onrender.com')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);

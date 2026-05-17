@@ -1,4 +1,6 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://club-caf-management-system.onrender.com';
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ||
+  'https://club-caf-management-system.onrender.com/api';
 
 type RequestOptions = RequestInit & { token?: string };
 
