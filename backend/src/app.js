@@ -33,27 +33,24 @@ connectDB().catch((err) => {
   console.error('Failed to connect to MongoDB on startup:', err);
 });
 
-const allowedOrigins = (process.env.CLIENT_URL || 'https://club-caf-management-system.onrender.com')
-  .split(',')
-  .map((o) => o.trim())
-  .filter(Boolean);
-
+/* Security + CORS */
 app.use(helmet());
-app.use(
-  cors({
-    origin: allowedOrigins,
-    credentials: true,
-  })
-);
+
+/* TEMPORARY OPEN CORS FIX */
+app.use(cors());
+
+/* Middleware */
 app.use(morgan('dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
+/* Rate Limiting */
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 300,
   message: { success: false, message: 'Too many requests' },
 });
+
 app.use('/api', limiter);
 
 const authLimiter = rateLimit({
@@ -61,20 +58,27 @@ const authLimiter = rateLimit({
   max: 25,
   message: { success: false, message: 'Too many login attempts' },
 });
+
 app.use('/api/auth/login', authLimiter);
 app.use('/api/portal/login', authLimiter);
 
+/* Health Check */
 app.get('/api/health', (req, res) => {
   const dbConnected = isDbReady();
+
   res.status(dbConnected ? 200 : 503).json({
     success: dbConnected,
-    message: dbConnected ? 'OpenHouseCafe API v3 — SaaS Ready' : 'API running; waiting for MongoDB',
+    message: dbConnected
+      ? 'OpenHouseCafe API v3 — SaaS Ready'
+      : 'API running; waiting for MongoDB',
     database: dbConnected ? 'connected' : 'disconnected',
   });
 });
 
+/* Database Ready Check */
 app.use('/api', (req, res, next) => {
   if (req.path === '/health') return next();
+
   if (!isDbReady()) {
     return res.status(503).json({
       success: false,
@@ -82,9 +86,11 @@ app.use('/api', (req, res, next) => {
         'Database not connected. Start MongoDB on localhost:27017, or set MONGODB_URI in backend/.env (e.g. MongoDB Atlas).',
     });
   }
+
   return next();
 });
 
+/* Routes */
 app.use('/api/auth', authRoutes);
 app.use('/api/reservations', reservationRoutes);
 app.use('/api/events', eventRoutes);
@@ -103,6 +109,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/tables', tableRoutes);
 app.use('/api/menu', menuRoutes);
 
+/* Error Handler */
 app.use(errorHandler);
 
 module.exports = app;
