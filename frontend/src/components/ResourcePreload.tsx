@@ -14,14 +14,8 @@ export default function ResourcePreload() {
     document.head.appendChild(poster);
     links.push(poster);
 
-    const video = document.createElement('link');
-    video.rel = 'preload';
-    video.as = 'fetch';
-    video.href = HERO_VIDEO_URL;
-    video.crossOrigin = 'anonymous';
-    document.head.appendChild(video);
-    links.push(video);
-
+    // Some browsers do not support preloading video via <link rel="preload" as="video">.
+    // The hero video itself already requests with preload="auto" on the <video> element.
     return () => {
       links.forEach((l) => l.remove());
     };

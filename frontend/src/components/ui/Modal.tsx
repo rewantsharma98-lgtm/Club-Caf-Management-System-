@@ -42,7 +42,7 @@ export default function Modal({
           <motion.button
             type="button"
             aria-label="Close overlay"
-            className="absolute inset-0 bg-black/75 backdrop-blur-sm"
+            className="absolute inset-0 z-0 bg-black/75 backdrop-blur-sm"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -57,7 +57,7 @@ export default function Modal({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: '100%' }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className={`relative z-10 flex w-full flex-col border border-border bg-elevated shadow-soft-lg max-h-[100dvh] sm:max-h-[90vh] rounded-t-2xl sm:rounded-lg ${
+            className={`relative z-[210] flex w-full flex-col border border-border bg-elevated shadow-soft-lg max-h-[100dvh] sm:max-h-[90vh] rounded-t-2xl sm:rounded-lg ${
               wide ? 'sm:max-w-3xl' : 'sm:max-w-lg'
             }`}
           >

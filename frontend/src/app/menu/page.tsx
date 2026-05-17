@@ -9,6 +9,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { api, MenuData } from '@/lib/api';
 import { BRAND } from '@/lib/brand';
 
+
 export default function MenuPage() {
   const [menu, setMenu] = useState<MenuData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -23,6 +24,7 @@ export default function MenuPage() {
       })
       .finally(() => setLoading(false));
   }, []);
+  
 
   return (
     <>
@@ -109,3 +111,4 @@ export default function MenuPage() {
     </>
   );
 }
+

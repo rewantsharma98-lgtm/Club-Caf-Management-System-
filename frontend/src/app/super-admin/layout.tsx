@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Menu, X } from 'lucide-react';
 import { getToken, removeToken } from '@/lib/auth';
@@ -14,7 +14,12 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
   const [ready, setReady] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
+  const verifyStarted = useRef(false);
+
   useEffect(() => {
+    if (verifyStarted.current) return;
+    verifyStarted.current = true;
+
     const token = getToken();
     if (!token) {
       router.replace('/admin/login');
@@ -29,7 +34,10 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
         }
         setReady(true);
       })
-      .catch(() => router.replace('/admin/login'));
+      .catch(() => {
+        removeToken();
+        router.replace('/admin/login');
+      });
   }, [router]);
 
   useEffect(() => {

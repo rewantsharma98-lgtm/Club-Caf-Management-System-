@@ -6,6 +6,7 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import CinematicIntro from '@/components/home/CinematicIntro';
 import Hero from '@/components/home/Hero';
+import ResourcePreload from '@/components/ResourcePreload';
 import ReservationSection from '@/components/home/ReservationSection';
 import GallerySection from '@/components/home/GallerySection';
 import MenuSection from '@/components/home/MenuSection';
@@ -55,6 +56,7 @@ function HomeContent() {
 
   return (
     <>
+      <ResourcePreload />
       <CinematicIntro onComplete={handleIntroComplete} />
       {/* Keep page visible under intro so hero video can buffer and autoplay */}
       <Navbar />

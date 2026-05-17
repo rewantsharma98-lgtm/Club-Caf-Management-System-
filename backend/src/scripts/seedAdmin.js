@@ -13,14 +13,16 @@ const MenuItem = require('../models/MenuItem');
 const { ROLES } = require('../config/constants');
 
 const seed = async () => {
-  const uri = process.env.MONGODB_URI;
-  if (!uri) {
-    console.error('\n✗ MONGODB_URI is missing. Copy backend/.env.example to backend/.env\n');
-    process.exit(1);
+  const defaultLocalUri = 'mongodb://127.0.0.1:27017/openhousecafe';
+  const rawUri = process.env.MONGODB_URI;
+  const uri = rawUri?.trim() || defaultLocalUri;
+  if (!rawUri) {
+    console.warn('\n⚠️ No MONGODB_URI found in backend/.env. Falling back to local MongoDB for development.\n');
+    console.warn(`Use docker compose up -d and then run: MONGODB_URI=${defaultLocalUri}`);
   }
   const { getMongoOptions, formatMongoError } = require('../config/mongoOptions');
   try {
-    await mongoose.connect(uri.trim(), getMongoOptions(uri));
+    await mongoose.connect(uri, getMongoOptions(uri));
   } catch (err) {
     console.error('\n✗ Cannot connect to MongoDB:\n');
     console.error(formatMongoError(err));

@@ -1,40 +1,40 @@
 const mongoose = require('mongoose');
 const { getMongoOptions, formatMongoError } = require('./mongoOptions');
 
-const RETRY_MS = 8000;
+const cached = global._ohc_mongoose || (global._ohc_mongoose = { conn: null, promise: null });
 
-const connectDB = () => {
+const connectDB = async () => {
   const uri = process.env.MONGODB_URI?.trim();
 
   if (!uri) {
-    console.error('\n✗ MONGODB_URI is missing in backend/.env\n');
-    console.error('  Copy backend/.env.example → backend/.env and set your connection string.\n');
-    return;
+    throw new Error('MONGODB_URI is missing. Set it in backend/.env or in Vercel environment variables.');
   }
 
   if (uri.includes('MONGODB_URI=')) {
-    console.error('\n✗ MONGODB_URI looks malformed (duplicate "MONGODB_URI=" in the value).');
-    console.error('  Fix backend/.env to a single line, e.g.:');
-    console.error('  MONGODB_URI=mongodb+srv://user:pass@cluster.mongodb.net/openhousecafe\n');
-    return;
+    throw new Error('MONGODB_URI looks malformed (duplicate "MONGODB_URI=" in the value).');
   }
 
-  const attempt = async () => {
-    try {
-      if (mongoose.connection.readyState !== 0) {
-        await mongoose.disconnect();
-      }
-      await mongoose.connect(uri, getMongoOptions(uri));
-      console.log('MongoDB connected');
-    } catch (err) {
-      console.error('\n✗ MongoDB connection failed:\n');
-      console.error(formatMongoError(err));
-      console.error(`\n→ Retrying in ${RETRY_MS / 1000}s...\n`);
-      setTimeout(attempt, RETRY_MS);
-    }
-  };
+  if (cached.conn) {
+    return cached.conn;
+  }
 
-  attempt();
+  if (!cached.promise) {
+    cached.promise = mongoose
+      .connect(uri, getMongoOptions(uri))
+      .then((connection) => {
+        cached.conn = connection;
+        console.log('MongoDB connected');
+        return connection;
+      })
+      .catch((err) => {
+        cached.promise = null;
+        console.error('\n✗ MongoDB Atlas connection failed:\n');
+        console.error(formatMongoError(err));
+        throw err;
+      });
+  }
+
+  return cached.promise;
 };
 
 const isDbReady = () => mongoose.connection.readyState === 1;
